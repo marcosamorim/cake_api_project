@@ -1,0 +1,4 @@
+services:
+  test:
+    build: .
+    command: ["uv", "run", "python", "-m", "unittest", "-v", "tests/test_routes.py"]

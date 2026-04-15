@@ -29,6 +29,14 @@ docker run --rm -p 8000:8000 \
   cake-api
 ```
 
+## Run Tests With Docker Compose
+
+```bash
+docker compose -f docker-compose.test.yml up --build
+```
+
+`--build` is optional. Use it on first run or after Dockerfile/dependency changes.
+
 ## Criteria Checklist
 
 - OpenAPI/Swagger exposed:
