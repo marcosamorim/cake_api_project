@@ -1,0 +1,20 @@
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Local databases
+*.db
+*.sqlite3
+
+# IDE/editor
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
