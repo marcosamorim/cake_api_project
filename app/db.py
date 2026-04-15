@@ -4,7 +4,7 @@ from collections.abc import Generator
 from sqlmodel import Session, SQLModel, create_engine
 
 
-DATABASE_URL = os.getenv("CAKE_DB_URL", "sqlite:///./cakes.db")
+DATABASE_URL = os.getenv("CAKE_DB_URL", "sqlite:////db/cakes.db")
 _connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
 
 engine = create_engine(DATABASE_URL, connect_args=_connect_args)

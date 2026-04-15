@@ -1,66 +1,57 @@
-# Cake API (FastAPI + SQLModel)
-
-Simple API for listing, creating, and deleting cakes.
+# Cake API
 
 ## Requirements
 
-- Python 3.12+
-- `uv` (optional) or a regular virtual environment
+- Docker
 
-## Run Locally
-
-```bash
-source .venv/bin/activate
-uvicorn app.main:app --reload
-```
-
-API will be available at `http://127.0.0.1:8000`.
-
-## Run With Docker
-
-Build image:
+## Run With Docker Compose
 
 ```bash
-docker build -t cake-api .
+docker compose up --build
 ```
 
-Run container:
-
-```bash
-docker run --rm -p 8000:8000 cake-api
-```
-
-Optional: persist SQLite data between runs:
-
-```bash
-mkdir -p .docker-data
-docker run --rm -p 8000:8000 \
-  -e CAKE_DB_URL=sqlite:////data/cakes.db \
-  -v "$(pwd)/.docker-data:/data" \
-  cake-api
-```
-
-## API Docs
+API:
 
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
+- Cakes endpoint: `http://127.0.0.1:8000/cakes`
 
-## Endpoints
+`--build` is optional. Use it on first run or after Dockerfile/dependency changes.
 
-- `GET /cakes` list all cakes
-- `POST /cakes` create one cake
-- `DELETE /cakes/{id}` delete one cake
+SQLite data is persisted in `./db/cakes.db`.
 
-### Example Create Request
+Optional: run with plain Docker instead of compose:
 
 ```bash
-curl -X POST "http://127.0.0.1:8000/cakes" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": 1,
-    "name": "Chocolate Cake",
-    "comment": "Rich and moist",
-    "imageUrl": "https://example.com/chocolate-cake.jpg",
-    "yumFactor": 5
-  }'
+docker build -t cake-api .
+docker run --rm -p 8000:8000 \
+  -v "$(pwd)/db:/db" \
+  cake-api
 ```
+
+## Criteria Checklist
+
+- OpenAPI/Swagger exposed:
+  - `GET /openapi.json`
+  - `GET /docs`
+- Cakes can be listed: `GET /cakes`
+- Cakes can be added: `POST /cakes`
+- Cakes can be deleted: `DELETE /cakes/{id}`
+- Validation implemented:
+  - `name` max 30 chars
+  - `comment` max 200 chars
+  - `yumFactor` between 1 and 5
+- Docker runnable from a fresh clone:
+  - `docker compose up --build`
+
+## Future Extensions (Plus)
+
+- PostgreSQL migration path:
+  - Set `CAKE_DB_URL` to a Postgres URL.
+  - Add Alembic migrations for schema evolution.
+- Kubernetes:
+  - Add `Deployment` + `Service` manifests.
+  - Mount persistent volume for DB (or external managed DB).
+- Resilience/scale:
+  - Health probes (`/` or dedicated health endpoint).
+  - Multiple API replicas behind a load balancer.
