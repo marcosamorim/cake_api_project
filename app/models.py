@@ -19,3 +19,7 @@ class CakeCreate(CakeBase):
 
 class CakeResponse(CakeBase):
     id: int
+
+
+class ErrorResponse(SQLModel):
+    detail: str

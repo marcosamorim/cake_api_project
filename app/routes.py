@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from app.db import get_db
-from app.models import Cake, CakeCreate, CakeResponse
+from app.models import Cake, CakeCreate, CakeResponse, ErrorResponse
 
 router = APIRouter(tags=["cakes"])
 
@@ -13,8 +13,16 @@ def list_cakes(db: Session = Depends(get_db)) -> list[Cake]:
     return db.exec(select(Cake).order_by(Cake.id)).all()
 
 
-@router.post("/cakes", response_model=CakeResponse, status_code=201)
+@router.post(
+    "/cakes",
+    response_model=CakeResponse,
+    status_code=201,
+    responses={409: {"model": ErrorResponse}},
+)
 def add_cake(payload: CakeCreate, db: Session = Depends(get_db)) -> Cake:
+    if db.get(Cake, payload.id):
+        raise HTTPException(status_code=409, detail="Cake with this id already exists")
+
     cake = Cake.model_validate(payload)
     db.add(cake)
 
@@ -33,7 +41,11 @@ def add_cake(payload: CakeCreate, db: Session = Depends(get_db)) -> Cake:
     return cake
 
 
-@router.delete("/cakes/{cake_id}", status_code=204)
+@router.delete(
+    "/cakes/{cake_id}",
+    status_code=204,
+    responses={404: {"model": ErrorResponse}},
+)
 def delete_cake(cake_id: int, db: Session = Depends(get_db)) -> Response:
     cake = db.get(Cake, cake_id)
     if cake is None:
