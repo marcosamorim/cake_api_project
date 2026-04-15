@@ -20,4 +20,9 @@ def root() -> dict[str, str]:
     return {"message": "Cake API is running"}
 
 
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
+
+
 app.include_router(cake_router)

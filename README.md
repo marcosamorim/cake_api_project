@@ -15,6 +15,7 @@ API:
 - Swagger UI: `http://127.0.0.1:8000/docs`
 - OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 - Cakes endpoint: `http://127.0.0.1:8000/cakes`
+- Health endpoint: `http://127.0.0.1:8000/health`
 
 `--build` is optional. Use it on first run or after Dockerfile/dependency changes.
 
@@ -42,6 +43,8 @@ docker compose -f docker-compose.test.yml up --build
 - OpenAPI/Swagger exposed:
   - `GET /openapi.json`
   - `GET /docs`
+- Health check endpoint exposed:
+  - `GET /health`
 - Cakes can be listed: `GET /cakes`
 - Cakes can be added: `POST /cakes`
 - Cakes can be deleted: `DELETE /cakes/{id}`
@@ -54,12 +57,22 @@ docker compose -f docker-compose.test.yml up --build
 
 ## Future Extensions (Plus)
 
-- PostgreSQL migration path:
-  - Set `CAKE_DB_URL` to a Postgres URL.
-  - Add Alembic migrations for schema evolution.
-- Kubernetes:
-  - Add `Deployment` + `Service` manifests.
-  - Mount persistent volume for DB (or external managed DB).
-- Resilience/scale:
-  - Health probes (`/` or dedicated health endpoint).
-  - Multiple API replicas behind a load balancer.
+- Cloud deployment example (AWS ECS Fargate):
+  - Build/push image to ECR.
+  - Run service behind an Application Load Balancer.
+  - Move persistence to managed PostgreSQL (RDS).
+  - Pass config via environment variables/secrets manager.
+- Scaling:
+  - Run multiple API replicas behind load balancer.
+  - Use CPU/memory autoscaling policies.
+  - Keep API stateless and externalize DB.
+- Resilience / failure modes:
+  - Use `GET /health` for liveness/readiness checks.
+  - Enable container restarts and rolling deployments.
+  - Add DB backup/restore strategy.
+  - Set timeouts and retry strategy at load balancer level.
+- Future product/API evolution:
+  - Migrate to PostgreSQL + Alembic migrations.
+  - Add authentication/authorization.
+  - Add pagination/filtering/sorting on `GET /cakes`.
+  - Add API versioning strategy for backward compatibility.
