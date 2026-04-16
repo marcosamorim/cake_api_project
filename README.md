@@ -38,6 +38,36 @@ docker compose -f docker-compose.test.yml up --build
 
 `--build` is optional. Use it on first run or after Dockerfile/dependency changes.
 
+## Kubernetes Example (Extra Credit)
+Adding this simple example in case you prefer Kubernetes.
+The recommendation for running locally still is Docker.
+For real horizontal scaling, move persistence to managed PostgreSQL.
+
+1. Build image locally:
+
+```bash
+docker build -t cake-api:latest .
+```
+
+2. Apply scalable demo manifests (2 replicas, ephemeral pod storage):
+
+```bash
+kubectl apply -f k8s/deployment.yaml -f k8s/service.yaml
+```
+
+3. Expose service locally:
+
+```bash
+kubectl port-forward svc/cake-api 8000:80
+```
+
+4. Persistent SQLite demo (single replica with PVC):
+
+```bash
+kubectl apply -f k8s/pvc.yaml
+kubectl apply -f k8s/deployment-persistent.yaml -f k8s/service.yaml
+```
+
 ## Criteria Checklist
 
 - OpenAPI/Swagger exposed:
@@ -54,6 +84,9 @@ docker compose -f docker-compose.test.yml up --build
   - `yumFactor` between 1 and 5
 - Docker runnable from a fresh clone:
   - `docker compose up --build`
+- Kubernetes example manifests included:
+  - `k8s/deployment.yaml`
+  - `k8s/service.yaml`
 
 ## Future Extensions (Plus)
 

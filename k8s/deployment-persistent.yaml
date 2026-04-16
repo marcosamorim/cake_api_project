@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cake-api
+  labels:
+    app: cake-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cake-api
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: cake-api
+    spec:
+      containers:
+        - name: cake-api
+          image: cake-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: CAKE_DB_URL
+              value: "sqlite:////db/cakes.db"
+          volumeMounts:
+            - name: db
+              mountPath: /db
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+      volumes:
+        - name: db
+          persistentVolumeClaim:
+            claimName: cake-api-db-pvc
