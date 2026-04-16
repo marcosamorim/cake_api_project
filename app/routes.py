@@ -8,7 +8,16 @@ from app.models import Cake, CakeCreate, CakeResponse, ErrorResponse
 router = APIRouter(tags=["cakes"])
 
 
-@router.get("/cakes", response_model=list[CakeResponse])
+@router.get(
+    "/cakes",
+    response_model=list[CakeResponse],
+    summary="List all cakes",
+    description="Returns all cakes ordered by `id` in ascending order.",
+    responses={
+        200: {"description": "Cakes returned successfully."},
+        422: {"description": "Invalid request parameters."},
+    },
+)
 def list_cakes(db: Session = Depends(get_db)) -> list[Cake]:
     return db.exec(select(Cake).order_by(Cake.id)).all()
 
@@ -17,7 +26,13 @@ def list_cakes(db: Session = Depends(get_db)) -> list[Cake]:
     "/cakes",
     response_model=CakeResponse,
     status_code=201,
-    responses={409: {"model": ErrorResponse}},
+    summary="Create a cake",
+    description="Creates a new cake. If `id` already exists, returns `409`.",
+    responses={
+        201: {"description": "Cake created successfully."},
+        409: {"description": "Cake with the same id already exists.", "model": ErrorResponse},
+        422: {"description": "Validation error in request body."},
+    },
 )
 def add_cake(payload: CakeCreate, db: Session = Depends(get_db)) -> Cake:
     if db.get(Cake, payload.id):
@@ -44,7 +59,13 @@ def add_cake(payload: CakeCreate, db: Session = Depends(get_db)) -> Cake:
 @router.delete(
     "/cakes/{cake_id}",
     status_code=204,
-    responses={404: {"model": ErrorResponse}},
+    summary="Delete a cake",
+    description="Deletes a cake by id. Returns `404` when the cake is not found.",
+    responses={
+        204: {"description": "Cake deleted successfully."},
+        404: {"description": "Cake not found.", "model": ErrorResponse},
+        422: {"description": "Invalid cake id."},
+    },
 )
 def delete_cake(cake_id: int, db: Session = Depends(get_db)) -> Response:
     cake = db.get(Cake, cake_id)

@@ -12,7 +12,16 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="Cake API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="Cake API",
+    version="1.0.0",
+    description=(
+        "Simple Cake CRUD API. "
+        "Use `GET /cakes` to list cakes, `POST /cakes` to create a cake, "
+        "and `DELETE /cakes/{cake_id}` to remove a cake."
+    ),
+    lifespan=lifespan,
+)
 
 
 @app.get("/")

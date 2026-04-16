@@ -15,11 +15,36 @@ class Cake(CakeBase, table=True):
 
 class CakeCreate(CakeBase):
     id: int
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "Chocolate Cake",
+                "comment": "Rich and moist",
+                "imageUrl": "https://example.com/chocolate-cake.jpg",
+                "yumFactor": 5,
+            }
+        }
+    }
 
 
 class CakeResponse(CakeBase):
     id: int
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "id": 1,
+                "name": "Chocolate Cake",
+                "comment": "Rich and moist",
+                "imageUrl": "https://example.com/chocolate-cake.jpg",
+                "yumFactor": 5,
+            }
+        }
+    }
 
 
 class ErrorResponse(SQLModel):
     detail: str
+    model_config = {
+        "json_schema_extra": {"example": {"detail": "Cake with this id already exists"}}
+    }
